@@ -14,6 +14,7 @@
 %module mosh
 
 // C++ Standard Library Includes
+%apply unsigned long long { uint64_t }
 %include <std_deque.i>
 %include <std_list.i>
 %include <std_string.i>
