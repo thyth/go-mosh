@@ -110,7 +110,6 @@
 %}
 
 // --- Terminal::Framebuffer ---
-// TODO support shared_ptr smart pointer use in Terminal::Framebuffer via SWIG?
 %rename (equal) Terminal::Cell::operator==;
 %rename (notEqual) Terminal::Cell::operator!=;
 %rename (equal) Terminal::DrawState::operator==;
@@ -119,6 +118,16 @@
 %rename (equal) Terminal::Renditions::operator==;
 %rename (equal) Terminal::Row::operator==;
 %warnfilter(516) get_renditions; // a pair of declarations overloaded only by const pointer types -- ignore them
+//%include "../../mosh/src/util/shared.h" // for shared::{make_shared, shared_ptr}
+// Some SWIG backends support C++ smart pointers (see: http://www.swig.org/Doc3.0/Library.html#Library_std_shared_ptr),
+// but Golang backend does not. These smart pointers are mostly internal implementation details for Mosh, but they are
+// exposed in a few places. Renaming the exposure points with "unsafe" to alert to unintentional uses and suppressing
+// warning messages. If the SWIG backend for Go gains support for smart pointers in the future, revisit this.
+%rename (__unsafe__get_rows) Terminal::Framebuffer::get_rows;
+%rename (__unsafe__get_row) Terminal::Framebuffer::get_row;
+%rename (__unsafe__get_mutable_row) Terminal::Framebuffer::get_mutable_row;
+%warnfilter(315) shared_ptr;
+%warnfilter(315) make_shared;
 %include "../../mosh/src/terminal/terminalframebuffer.h"
 %{
     #include <assert.h>
