@@ -82,7 +82,87 @@ func CopyFramebuffer(other *Framebuffer) *Framebuffer {
 	return fb
 }
 
-// TODO wrap Terminal::Framebuffer
+// note: skipping reference assignment operator `Framebuffer &operator=( const Framebuffer &other );`
+// note: skipping access to DrawState field reference
+// note: skipping get_rows getter, since this is returning smart pointer types
+
+func (fb *Framebuffer) Scroll(n int) {
+	fb.wrapped.Scroll(n)
+}
+
+func (fb *Framebuffer) MoveRowsAutoscroll(rows int) {
+	fb.wrapped.Move_rows_autoscroll(rows)
+}
+
+// note: skipping `Row *get_row( int row )`
+// note: skipping `Cell *get_cell( int row = -1, int col = -1 )`
+// note: skipping `Row *get_mutable_row( int row )`
+// note: skipping `Cell *get_mutable_cell( int row = -1, int col = -1 )`
+// note: skipping `Cell *get_combining_cell( void )`
+// note: skipping `void apply_renditions_to_cell( Cell *cell )`
+
+func (fb *Framebuffer) InsertLine(beforeRow, count int) {
+	fb.wrapped.Insert_line(beforeRow, count)
+}
+
+func (fb *Framebuffer) DeleteLine(row, count int) {
+	fb.wrapped.Delete_line(row, count)
+}
+
+func (fb *Framebuffer) InsertCell(row, col int) {
+	fb.wrapped.Insert_cell(row, col)
+}
+
+func (fb *Framebuffer) DeleteCell(row, col int) {
+	fb.wrapped.Delete_cell(row, col)
+}
+
+func (fb *Framebuffer) Reset() {
+	fb.wrapped.Reset()
+}
+
+func (fb *Framebuffer) SoftReset() {
+	fb.wrapped.Soft_reset()
+}
+
+func (fb *Framebuffer) InitializeTitle() {
+	fb.wrapped.Set_title_initialized()
+}
+
+func (fb *Framebuffer) IsTitleInitialized() bool {
+	return fb.wrapped.Is_title_initialized()
+}
+
+// note: skipping the following due to use of std::vector<wchar_t>
+// - void set_icon_name( const title_type &s )
+// - void set_window_title( const title_type &s )
+// - void set_clipboard( const title_type &s )
+// - const title_type & get_icon_name( void )
+// - const title_type & get_window_title( void )
+// - const title_type & get_clipboard( void )
+// - void prefix_window_title( const title_type &s )
+
+func (fb *Framebuffer) Resize(width, height int) {
+	fb.wrapped.Resize(width, height)
+}
+
+// note: skipping the following due to exposure of Terminal::Cell and Terminal::Row
+// - void reset_cell( Cell *c )
+// - void reset_row( Row *r )
+
+func (fb *Framebuffer) RingBell() {
+	fb.wrapped.Ring_bell()
+}
+
+func (fb *Framebuffer) BellCount() uint {
+	return fb.wrapped.Get_bell_count()
+}
+
+func (fb *Framebuffer) Equals(other *Framebuffer) bool {
+	equals := fb.wrapped.Equal(other.wrapped)
+	runtime.KeepAlive(other)
+	return equals
+}
 
 type Display struct {
 	wrapped internals.Display
