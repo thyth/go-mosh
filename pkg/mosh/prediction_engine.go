@@ -54,16 +54,19 @@ func (pe *PredictionEngine) SetPredictOverwrite(overwrite bool) {
 	pe.wrapped.Set_predict_overwrite(overwrite)
 }
 
-func (pe *PredictionEngine) Apply() {
-	// TODO framebuffer
+func (pe *PredictionEngine) Apply(fb *Framebuffer) {
+	pe.wrapped.Apply(fb.wrapped)
+	runtime.KeepAlive(fb)
 }
 
-func (pe *PredictionEngine) NewUserByte() {
-	// TODO
+func (pe *PredictionEngine) NewUserByte(c byte, fb *Framebuffer) {
+	pe.wrapped.New_user_byte(c, fb.wrapped)
+	runtime.KeepAlive(fb)
 }
 
-func (pe *PredictionEngine) Cull() {
-	// TODO framebuffer
+func (pe *PredictionEngine) Cull(fb *Framebuffer) {
+	pe.wrapped.Cull(fb.wrapped)
+	runtime.KeepAlive(fb)
 }
 
 func (pe *PredictionEngine) Reset() {
