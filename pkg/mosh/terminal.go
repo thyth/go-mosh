@@ -31,7 +31,17 @@ func (emu *Complete) Perform(s string) string {
 	return emu.wrapped.Act(s)
 }
 
-// TODO get_fb (callee vs caller owner?)
+func (emu *Complete) GetFramebuffer() *Framebuffer {
+	internFb := emu.wrapped.Get_fb()
+	fb := &Framebuffer{
+		wrapped: internFb,
+	}
+	// TODO callee vs caller owner? i.e. should this Framebuffer be tracked as part of the *Complete instead?
+	runtime.SetFinalizer(fb, func (fb *Framebuffer) {
+		internals.DeleteFramebuffer(fb.wrapped)
+	})
+	return fb
+}
 
 func (emu *Complete) ResetInput() {
 	emu.wrapped.Reset_input()
@@ -53,7 +63,41 @@ func (emu *Complete) RegisterInputFrame(n uint64, now time.Time) {
 	emu.wrapped.Register_input_frame(n, timestamp(now))
 }
 
-// TODO wrap Terminal::Complete
+func (emu *Complete) WaitTime(now time.Time) time.Duration {
+	// the integer returned here seems to be a duration (in seconds)
+	return time.Second * time.Duration(emu.wrapped.Wait_time(timestamp(now)))
+}
+
+func (emu *Complete) Subtract(other *Complete) {
+	emu.wrapped.Subtract(other.wrapped)
+	runtime.KeepAlive(other)
+}
+
+func (emu *Complete) DiffFrom(existing *Complete) string {
+	diff := emu.wrapped.Diff_from(existing.wrapped)
+	runtime.KeepAlive(existing)
+	return diff
+}
+
+func (emu *Complete) InitDiff() string {
+	return emu.wrapped.Init_diff()
+}
+
+func (emu *Complete) ApplyString(diff string) {
+	emu.wrapped.Apply_string(diff)
+}
+
+func (emu *Complete) Equals(other *Complete) bool {
+	eq := emu.wrapped.Equal(other.wrapped)
+	runtime.KeepAlive(other)
+	return eq
+}
+
+func (emu *Complete) Compare(other *Complete) bool {
+	cmp := emu.wrapped.Compare(other.wrapped)
+	runtime.KeepAlive(other)
+	return cmp
+}
 
 type Framebuffer struct {
 	wrapped internals.Framebuffer
