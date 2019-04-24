@@ -32,14 +32,16 @@ func (emu *Complete) Perform(s string) string {
 }
 
 func (emu *Complete) GetFramebuffer() *Framebuffer {
+	// this returns a const reference to an internal framebuffer instance --
+	// this instance is created and collected independently of this reference; library consumers should be careful not
+	// to hold onto these references for longer than necessary, in case the parent reference is finalized
 	internFb := emu.wrapped.Get_fb()
 	fb := &Framebuffer{
 		wrapped: internFb,
 	}
-	// TODO callee vs caller owner? i.e. should this Framebuffer be tracked as part of the *Complete instead?
-	runtime.SetFinalizer(fb, func (fb *Framebuffer) {
-		internals.DeleteFramebuffer(fb.wrapped)
-	})
+	//runtime.SetFinalizer(fb, func (fb *Framebuffer) {
+	//	internals.DeleteFramebuffer(fb.wrapped)
+	//})
 	return fb
 }
 
