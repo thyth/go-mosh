@@ -1,2 +1,2 @@
-mosh.go
+*.go
 *_wrap.cxx
