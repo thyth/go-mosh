@@ -1,7 +1,9 @@
-package mosh
+package overlay
 
 import (
-	internals "../../internal/mosh"
+	util ".."
+	internals "../../../internal/mosh/overlay"
+	"../terminal"
 
 	"runtime"
 	"time"
@@ -54,18 +56,18 @@ func (pe *PredictionEngine) SetPredictOverwrite(overwrite bool) {
 	pe.wrapped.Set_predict_overwrite(overwrite)
 }
 
-func (pe *PredictionEngine) Apply(fb *Framebuffer) {
-	pe.wrapped.Apply(fb.wrapped)
+func (pe *PredictionEngine) Apply(fb *terminal.Framebuffer) {
+	pe.wrapped.Apply(fb.Wrapped)
 	runtime.KeepAlive(fb)
 }
 
-func (pe *PredictionEngine) NewUserByte(c byte, fb *Framebuffer) {
-	pe.wrapped.New_user_byte(c, fb.wrapped)
+func (pe *PredictionEngine) NewUserByte(c byte, fb *terminal.Framebuffer) {
+	pe.wrapped.New_user_byte(c, fb.Wrapped)
 	runtime.KeepAlive(fb)
 }
 
-func (pe *PredictionEngine) Cull(fb *Framebuffer) {
-	pe.wrapped.Cull(fb.wrapped)
+func (pe *PredictionEngine) Cull(fb *terminal.Framebuffer) {
+	pe.wrapped.Cull(fb.Wrapped)
 	runtime.KeepAlive(fb)
 }
 
@@ -73,20 +75,16 @@ func (pe *PredictionEngine) Reset() {
 	pe.wrapped.Reset()
 }
 
-func timestamp(t time.Time) uint64 {
-	return uint64(t.UnixNano() / int64(time.Millisecond/time.Nanosecond))
-}
-
 func (pe *PredictionEngine) LocalFrameSent(t time.Time) {
-	pe.wrapped.Set_local_frame_sent(timestamp(t))
+	pe.wrapped.Set_local_frame_sent(util.Timestamp(t))
 }
 
 func (pe *PredictionEngine) LocalFrameAcked(t time.Time) {
-	pe.wrapped.Set_local_frame_acked(timestamp(t))
+	pe.wrapped.Set_local_frame_acked(util.Timestamp(t))
 }
 
 func (pe *PredictionEngine) LocalFrameLateAcked(t time.Time) {
-	pe.wrapped.Set_local_frame_late_acked(timestamp(t))
+	pe.wrapped.Set_local_frame_late_acked(util.Timestamp(t))
 }
 
 func (pe *PredictionEngine) SetSendInterval(duration time.Duration) {

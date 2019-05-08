@@ -1,7 +1,10 @@
-package mosh
+package terminal
 
 import (
-	internals "../../internal/mosh"
+	util ".."
+	internals "../../../internal/mosh"
+	"../parser"
+
 	"runtime"
 	"time"
 )
@@ -15,14 +18,14 @@ func MakeComplete(width, height int) *Complete {
 	emu := &Complete{
 		wrapped: wrapped,
 	}
-	runtime.SetFinalizer(emu, func (emu *Complete) {
+	runtime.SetFinalizer(emu, func(emu *Complete) {
 		internals.DeleteComplete(emu.wrapped)
 	})
 	return emu
 }
 
-func (emu *Complete) Act(action Action) string {
-	effect := emu.wrapped.Act(action.intern())
+func (emu *Complete) Act(action parser.Action) string {
+	effect := emu.wrapped.Act(action.Intern())
 	runtime.KeepAlive(action)
 	return effect
 }
@@ -37,10 +40,10 @@ func (emu *Complete) GetFramebuffer() *Framebuffer {
 	// to hold onto these references for longer than necessary, in case the parent reference is finalized
 	internFb := emu.wrapped.Get_fb()
 	fb := &Framebuffer{
-		wrapped: internFb,
+		Wrapped: internFb,
 	}
 	//runtime.SetFinalizer(fb, func (fb *Framebuffer) {
-	//	internals.DeleteFramebuffer(fb.wrapped)
+	//	internals.DeleteFramebuffer(fb.Wrapped)
 	//})
 	return fb
 }
@@ -52,22 +55,22 @@ func (emu *Complete) ResetInput() {
 func (emu *Complete) GetEchoAck() time.Time {
 	// create a Go time.Time from a millisecond epoch time -- to millisecond accuracy
 	milliseconds := int64(emu.wrapped.Get_echo_ack())
-	seconds := milliseconds / int64(time.Second / time.Millisecond)
-	nanos := (milliseconds % int64(time.Second / time.Millisecond)) * int64(time.Millisecond / time.Nanosecond)
+	seconds := milliseconds / int64(time.Second/time.Millisecond)
+	nanos := (milliseconds % int64(time.Second/time.Millisecond)) * int64(time.Millisecond/time.Nanosecond)
 	return time.Unix(seconds, nanos)
 }
 
 func (emu *Complete) SetEchoAck(t time.Time) bool {
-	return emu.wrapped.Set_echo_ack(timestamp(t))
+	return emu.wrapped.Set_echo_ack(util.Timestamp(t))
 }
 
 func (emu *Complete) RegisterInputFrame(n uint64, now time.Time) {
-	emu.wrapped.Register_input_frame(n, timestamp(now))
+	emu.wrapped.Register_input_frame(n, util.Timestamp(now))
 }
 
 func (emu *Complete) WaitTime(now time.Time) time.Duration {
 	// the integer returned here seems to be a duration (in seconds)
-	return time.Second * time.Duration(emu.wrapped.Wait_time(timestamp(now)))
+	return time.Second * time.Duration(emu.wrapped.Wait_time(util.Timestamp(now)))
 }
 
 func (emu *Complete) Subtract(other *Complete) {
@@ -102,28 +105,28 @@ func (emu *Complete) Compare(other *Complete) bool {
 }
 
 type Framebuffer struct {
-	wrapped internals.Framebuffer
+	Wrapped internals.Framebuffer
 }
 
 func MakeFramebuffer(width, height int) *Framebuffer {
 	wrapped := internals.NewFramebuffer(width, height)
 	fb := &Framebuffer{
-		wrapped: wrapped,
+		Wrapped: wrapped,
 	}
-	runtime.SetFinalizer(fb, func (fb *Framebuffer) {
-		internals.DeleteFramebuffer(fb.wrapped)
+	runtime.SetFinalizer(fb, func(fb *Framebuffer) {
+		internals.DeleteFramebuffer(fb.Wrapped)
 	})
 	return fb
 }
 
 func CopyFramebuffer(other *Framebuffer) *Framebuffer {
-	wrapped := internals.NewFramebuffer(other.wrapped)
+	wrapped := internals.NewFramebuffer(other.Wrapped)
 	runtime.KeepAlive(other)
 	fb := &Framebuffer{
-		wrapped: wrapped,
+		Wrapped: wrapped,
 	}
-	runtime.SetFinalizer(fb, func (fb *Framebuffer) {
-		internals.DeleteFramebuffer(fb.wrapped)
+	runtime.SetFinalizer(fb, func(fb *Framebuffer) {
+		internals.DeleteFramebuffer(fb.Wrapped)
 	})
 	return fb
 }
@@ -133,11 +136,11 @@ func CopyFramebuffer(other *Framebuffer) *Framebuffer {
 // note: skipping get_rows getter, since this is returning smart pointer types
 
 func (fb *Framebuffer) Scroll(n int) {
-	fb.wrapped.Scroll(n)
+	fb.Wrapped.Scroll(n)
 }
 
 func (fb *Framebuffer) MoveRowsAutoscroll(rows int) {
-	fb.wrapped.Move_rows_autoscroll(rows)
+	fb.Wrapped.Move_rows_autoscroll(rows)
 }
 
 // note: skipping `Row *get_row( int row )`
@@ -148,35 +151,35 @@ func (fb *Framebuffer) MoveRowsAutoscroll(rows int) {
 // note: skipping `void apply_renditions_to_cell( Cell *cell )`
 
 func (fb *Framebuffer) InsertLine(beforeRow, count int) {
-	fb.wrapped.Insert_line(beforeRow, count)
+	fb.Wrapped.Insert_line(beforeRow, count)
 }
 
 func (fb *Framebuffer) DeleteLine(row, count int) {
-	fb.wrapped.Delete_line(row, count)
+	fb.Wrapped.Delete_line(row, count)
 }
 
 func (fb *Framebuffer) InsertCell(row, col int) {
-	fb.wrapped.Insert_cell(row, col)
+	fb.Wrapped.Insert_cell(row, col)
 }
 
 func (fb *Framebuffer) DeleteCell(row, col int) {
-	fb.wrapped.Delete_cell(row, col)
+	fb.Wrapped.Delete_cell(row, col)
 }
 
 func (fb *Framebuffer) Reset() {
-	fb.wrapped.Reset()
+	fb.Wrapped.Reset()
 }
 
 func (fb *Framebuffer) SoftReset() {
-	fb.wrapped.Soft_reset()
+	fb.Wrapped.Soft_reset()
 }
 
 func (fb *Framebuffer) InitializeTitle() {
-	fb.wrapped.Set_title_initialized()
+	fb.Wrapped.Set_title_initialized()
 }
 
 func (fb *Framebuffer) IsTitleInitialized() bool {
-	return fb.wrapped.Is_title_initialized()
+	return fb.Wrapped.Is_title_initialized()
 }
 
 // note: skipping the following due to use of std::vector<wchar_t>
@@ -189,7 +192,7 @@ func (fb *Framebuffer) IsTitleInitialized() bool {
 // - void prefix_window_title( const title_type &s )
 
 func (fb *Framebuffer) Resize(width, height int) {
-	fb.wrapped.Resize(width, height)
+	fb.Wrapped.Resize(width, height)
 }
 
 // note: skipping the following due to exposure of Terminal::Cell and Terminal::Row
@@ -197,15 +200,15 @@ func (fb *Framebuffer) Resize(width, height int) {
 // - void reset_row( Row *r )
 
 func (fb *Framebuffer) RingBell() {
-	fb.wrapped.Ring_bell()
+	fb.Wrapped.Ring_bell()
 }
 
 func (fb *Framebuffer) BellCount() uint {
-	return fb.wrapped.Get_bell_count()
+	return fb.Wrapped.Get_bell_count()
 }
 
 func (fb *Framebuffer) Equals(other *Framebuffer) bool {
-	equals := fb.wrapped.Equal(other.wrapped)
+	equals := fb.Wrapped.Equal(other.Wrapped)
 	runtime.KeepAlive(other)
 	return equals
 }
@@ -234,7 +237,7 @@ func (disp *Display) Close() string {
 }
 
 func (disp *Display) NewFrame(initialized bool, last, f *Framebuffer) string {
-	frame := disp.wrapped.New_frame(initialized, last.wrapped, f.wrapped)
+	frame := disp.wrapped.New_frame(initialized, last.Wrapped, f.Wrapped)
 	runtime.KeepAlive(last)
 	runtime.KeepAlive(f)
 	return frame

@@ -1,13 +1,13 @@
-package mosh
+package parser
 
 import (
-	internals "../../internal/mosh"
+	internals "../../../internal/mosh"
 	"runtime"
 )
 
 // Action covers all wrapper types for supported Parser::Action sub-classes
 type Action interface {
-	intern() internals.Action
+	Intern() internals.Action
 	Name() string
 	Ignore() bool
 }
@@ -16,7 +16,7 @@ type Resize struct {
 	wrapped internals.Resize
 }
 
-func (r *Resize) intern() internals.Action {
+func (r *Resize) Intern() internals.Action {
 	return r.wrapped
 }
 
@@ -43,7 +43,7 @@ type UserByte struct {
 	wrapped internals.UserByte
 }
 
-func (ub *UserByte) intern() internals.Action {
+func (ub *UserByte) Intern() internals.Action {
 	return ub.wrapped
 }
 
