@@ -1,6 +1,6 @@
 %module parser
 
-//%apply unsigned int { wchar_t }
+%apply unsigned int { wchar_t }
 %include <std_string.i>
 
 // ignore all classes, except for Parser::{Action, Resize, UserByte}
