@@ -1,2 +1,3 @@
 *.go
 *_wrap.cxx
+*.so
