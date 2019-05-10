@@ -2,3 +2,4 @@
 *_wrap.cxx
 *.so
 !build.go
+!mosh.go

@@ -2,7 +2,7 @@ package terminal
 
 import (
 	util ".."
-	internals "../../../internal/mosh"
+	internals "../../../internal/mosh/terminal"
 	"../parser"
 
 	"runtime"
@@ -93,7 +93,7 @@ func (emu *Complete) ApplyString(diff string) {
 }
 
 func (emu *Complete) Equals(other *Complete) bool {
-	eq := emu.wrapped.Equal(other.wrapped)
+	eq := emu.wrapped.Equals(other.wrapped)
 	runtime.KeepAlive(other)
 	return eq
 }
@@ -208,7 +208,7 @@ func (fb *Framebuffer) BellCount() uint {
 }
 
 func (fb *Framebuffer) Equals(other *Framebuffer) bool {
-	equals := fb.Wrapped.Equal(other.Wrapped)
+	equals := fb.Wrapped.Equals(other.Wrapped)
 	runtime.KeepAlive(other)
 	return equals
 }

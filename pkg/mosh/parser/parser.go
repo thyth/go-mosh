@@ -1,7 +1,7 @@
 package parser
 
 import (
-	internals "../../../internal/mosh"
+	internals "../../../internal/mosh/parser"
 	"runtime"
 )
 
