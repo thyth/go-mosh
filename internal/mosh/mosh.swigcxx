@@ -1,0 +1,5 @@
+%module mosh
+
+%rename($ignore, %$isclass) "";
+
+%include "../../mosh/version.h"
