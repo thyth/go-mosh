@@ -3,7 +3,8 @@
 > Mosh is a remote terminal application that supports intermittent connectivity, allows roaming, and provides
 > speculative local echo and line editing of user keystrokes.
 
-Go-Mosh is a SWIG based wrapper so that (parts of) Mosh can be used as a library from Golang.
+Go-Mosh is a SWIG based wrapper so that (parts of) Mosh can be used as a library from Golang. Mosh is licensed under the
+terms of the GPLv3, as is this wrapper.
 
 This SWIG specification wraps only a small subset of Mosh, specifically the following C++ classes:
 
@@ -29,4 +30,8 @@ garbage collected, and where appropriate accept/return Go objects e.g. `time.Tim
 
 ## Instructions
 
-\[TODO\]
+- Install SWIG (tested with version 4.0.0)
+- Install required runtime libraries
+- Run `git submodule update --init` to retrieve a copy of the Mosh repository
+- Build Mosh by following the instructions within the Mosh repository
+- Use go-mosh library and build downstream project normally with `go build`
