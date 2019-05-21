@@ -1,9 +1,9 @@
 package terminal
 
 import (
-	util ".."
-	internals "../../../internal/mosh/terminal"
-	"../parser"
+	internals "gitlab.hive.thyth.com/chronostruct/go-mosh/internal/mosh/terminal"
+	util "gitlab.hive.thyth.com/chronostruct/go-mosh/pkg/mosh"
+	"gitlab.hive.thyth.com/chronostruct/go-mosh/pkg/mosh/parser"
 
 	"runtime"
 	"time"

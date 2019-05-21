@@ -1,7 +1,7 @@
 package mosh
 
 import (
-	internals "../../internal/mosh"
+	internals "gitlab.hive.thyth.com/chronostruct/go-mosh/internal/mosh"
 
 	"time"
 )

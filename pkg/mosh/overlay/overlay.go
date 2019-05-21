@@ -1,9 +1,9 @@
 package overlay
 
 import (
-	util ".."
-	internals "../../../internal/mosh/overlay"
-	"../terminal"
+	internals "gitlab.hive.thyth.com/chronostruct/go-mosh/internal/mosh/overlay"
+	util "gitlab.hive.thyth.com/chronostruct/go-mosh/pkg/mosh"
+	"gitlab.hive.thyth.com/chronostruct/go-mosh/pkg/mosh/terminal"
 
 	"runtime"
 	"time"

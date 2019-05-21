@@ -1,7 +1,7 @@
 package parser
 
 import (
-	internals "../../../internal/mosh/parser"
+	internals "gitlab.hive.thyth.com/chronostruct/go-mosh/internal/mosh/parser"
 	"runtime"
 )
 
