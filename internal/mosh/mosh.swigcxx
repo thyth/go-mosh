@@ -1,5 +1,81 @@
 %module mosh
 
+%apply unsigned long long { uint64_t }
+%apply unsigned int { wchar_t }
+%include <std_string.i>
+%include <std_list.i>
+%include <std_vector.i>
+%include <std_deque.i>
+
+// ignore all classes except those pulled in explicitly
 %rename($ignore, %$isclass) "";
 
 %include "../../mosh/version.h"
+
+// --------------------------------------------------------
+
+// un-ignore classes Parser::{Action, Resize, UserByte}
+%rename("%s") Action;
+%rename("%s") Resize;
+%rename("%s") UserByte;
+
+%rename (equals) Parser::Resize::operator==;
+%rename (equals) Parser::UserByte::operator==;
+
+%include "../../mosh/src/terminal/parseraction.h"
+%{
+    #include "../../mosh/src/terminal/parseraction.h"
+%}
+
+// --------------------------------------------------------
+
+// un-ignore classes Terminal::{Complete, Display, Framebuffer}
+%rename("%s") Complete;
+%rename("%s") Display;
+%rename("%s") Framebuffer;
+
+%rename (equals) Terminal::Complete::operator==;
+
+%rename (equals) Terminal::Cell::operator==;
+%ignore Terminal::Cell::operator!=;
+%rename (equals) Terminal::DrawState::operator==;
+%rename (assign) Terminal::Framebuffer::operator=;
+%rename (equals) Terminal::Framebuffer::operator==;
+%rename (equals) Terminal::Renditions::operator==;
+%rename (equals) Terminal::Row::operator==;
+%warnfilter(516) get_renditions; // a pair of declarations overloaded only by const pointer types -- ignore them
+%ignore Terminal::Framebuffer::get_rows;
+%ignore Terminal::Framebuffer::get_row;
+%ignore Terminal::Framebuffer::get_mutable_row;
+%warnfilter(315) shared_ptr;
+%warnfilter(315) make_shared;
+
+%include "../../mosh/src/terminal/terminalframebuffer.h"
+%include "../../mosh/src/terminal/terminaldisplay.h"
+%include "../../mosh/src/statesync/completeterminal.h"
+
+%{
+    #include "../../mosh/src/terminal/terminalframebuffer.h"
+    #include "../../mosh/src/terminal/terminaldisplay.h"
+    #include "../../mosh/src/statesync/completeterminal.h"
+%}
+
+// --------------------------------------------------------
+
+%warnfilter(315) wstring;
+
+// un-ignore class Overlay::PredictionEngine
+%rename("%s") PredictionEngine;
+
+// create a dummy designator of the Framebuffer in the Terminal namespace, so the correct C++ wrapper is generated
+//namespace Terminal {
+//    class Framebuffer { };
+//}
+
+// suppress warning about the Network namespace. All uses of that namespace are in ignored classes.
+namespace Network { }
+
+%include "../../mosh/src/frontend/terminaloverlay.h"
+%{
+    #include "../../mosh/src/frontend/terminaloverlay.h"
+%}
