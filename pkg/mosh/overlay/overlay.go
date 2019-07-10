@@ -2,7 +2,6 @@ package overlay
 
 import (
 	internals "gitlab.hive.thyth.com/chronostruct/go-mosh/internal/mosh"
-	util "gitlab.hive.thyth.com/chronostruct/go-mosh/pkg/mosh"
 	"gitlab.hive.thyth.com/chronostruct/go-mosh/pkg/mosh/terminal"
 
 	"runtime"
@@ -75,16 +74,16 @@ func (pe *PredictionEngine) Reset() {
 	pe.wrapped.Reset()
 }
 
-func (pe *PredictionEngine) LocalFrameSent(t time.Time) {
-	pe.wrapped.Set_local_frame_sent(util.Timestamp(t))
+func (pe *PredictionEngine) LocalFrameSent(epoch uint64) {
+	pe.wrapped.Set_local_frame_sent(epoch)
 }
 
-func (pe *PredictionEngine) LocalFrameAcked(t time.Time) {
-	pe.wrapped.Set_local_frame_acked(util.Timestamp(t))
+func (pe *PredictionEngine) LocalFrameAcked(epoch uint64) {
+	pe.wrapped.Set_local_frame_acked(epoch)
 }
 
-func (pe *PredictionEngine) LocalFrameLateAcked(t time.Time) {
-	pe.wrapped.Set_local_frame_late_acked(util.Timestamp(t))
+func (pe *PredictionEngine) LocalFrameLateAcked(epoch uint64) {
+	pe.wrapped.Set_local_frame_late_acked(epoch)
 }
 
 func (pe *PredictionEngine) SetSendInterval(duration time.Duration) {
