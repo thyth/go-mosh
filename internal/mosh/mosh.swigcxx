@@ -1,3 +1,20 @@
+/*
+ * go-mosh: mosh SWIG wrapper for Golang
+ * Copyright 2019 Daniel Selifonov
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 %module mosh
 
 %apply unsigned long long { uint64_t }
@@ -66,11 +83,6 @@
 
 // un-ignore class Overlay::PredictionEngine
 %rename("%s") PredictionEngine;
-
-// create a dummy designator of the Framebuffer in the Terminal namespace, so the correct C++ wrapper is generated
-//namespace Terminal {
-//    class Framebuffer { };
-//}
 
 // suppress warning about the Network namespace. All uses of that namespace are in ignored classes.
 namespace Network { }
