@@ -27,11 +27,17 @@ garbage collected, and where appropriate accept/return Go objects e.g. `time.Tim
 
 - `ncurses`
 - `protobuf`
+- `crypto` (Linux)
 
 ## Instructions
 
-- Install SWIG (tested with version 4.0.0)
+- Install SWIG (tested with versions 3.0.9 & 4.0.0)
 - Install required runtime libraries
 - Run `git submodule update --init` to retrieve a copy of the Mosh repository
 - Build Mosh by following the instructions within the Mosh repository
 - Use go-mosh library and build downstream project normally with `go build`
+
+Build is confirmed functional on macOS (darwin) and Linux platforms when using Clang toolchain.
+
+Note: When using go-mosh as a Go module, follow these installation instructions within the instance of go-mosh loaded
+into the module managed $GOPATH.

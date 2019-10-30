@@ -1,4 +1,5 @@
 *.go
 *_wrap.cxx
 *.so
-!build.go
+!build_darwin.go
+!build_linux.go

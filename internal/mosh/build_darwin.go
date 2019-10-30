@@ -1,3 +1,5 @@
+// +build darwin
+
 package mosh
 
 // Per https://github.com/golang/go/issues/6696 -- use a build.go file to specify import "C"/cgo pragmas for SWIG
