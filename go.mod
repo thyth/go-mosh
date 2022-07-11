@@ -1,3 +1,3 @@
 module gitlab.hive.thyth.com/chronostruct/go-mosh
 
-go 1.12
+go 1.18

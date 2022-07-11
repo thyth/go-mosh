@@ -27,7 +27,7 @@
 // ignore all classes except those pulled in explicitly
 %rename($ignore, %$isclass) "";
 
-%include "../../mosh/version.h"
+%include "../../mosh/src/include/version.h"
 
 // --------------------------------------------------------
 
