@@ -1,0 +1,29 @@
+# Build Sanity/Smoke Test for go-mosh
+#
+# Note: This just verifies that mosh can be compiled and that `go build` works.
+
+image: "ubuntu:jammy"
+
+stages:
+  - build
+
+before_script:
+  - apt-get update -qq
+  # certs and git to pull the mosh sub-module; swig and golang to build go-mosh
+  - apt-get install -y -qq ca-certificates git swig golang-1.18
+  # packages required to build mosh
+  - apt-get install -y -qq autoconf make pkg-config libncurses-dev protobuf-compiler libprotobuf-dev zlib1g-dev libssl-dev
+  # use clang instead of g++/gcc to build mosh and the cgo dependency in go-mosh; set system compiler to clang
+  - apt-get install -y -qq clang
+  - update-alternatives --set c++ /usr/bin/clang++
+  - update-alternatives --set cc /usr/bin/clang
+  - update-alternatives --set c89 /usr/bin/clang
+  - update-alternatives --set c99 /usr/bin/clang
+
+sanity_check:
+  stage: build
+  script:
+    - git submodule update --init
+    - ./build-mosh.sh
+    # don't need to run build-fixup.sh on Linux (case sensitive filesystem)
+    - CC="cc" CXX="c++" /usr/lib/go-1.18/bin/go build ...
