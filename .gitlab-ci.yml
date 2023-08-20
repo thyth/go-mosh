@@ -25,5 +25,5 @@ sanity_check:
   script:
     - git submodule update --init
     - ./build-mosh.sh
-    # don't need to run build-fixup.sh on Linux (case sensitive filesystem)
-    - CC="cc" CXX="c++" /usr/lib/go-1.18/bin/go build ...
+    - CC="cc" CXX="c++" /usr/lib/go-1.18/bin/go build ./...
+    - CC="cc" CXX="c++" /usr/lib/go-1.18/bin/go test ./test/mosh

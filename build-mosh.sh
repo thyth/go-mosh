@@ -7,3 +7,4 @@ cd "$(dirname $0)/mosh" || exit 1
 ./autogen.sh
 ./configure
 make
+popd
