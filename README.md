@@ -27,6 +27,7 @@ garbage collected, and where appropriate accept/return Go objects e.g. `time.Tim
 
 - `ncurses`
 - `protobuf`
+- `abseil`
 - `crypto` (Linux)
 
 ## Instructions
