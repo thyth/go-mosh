@@ -31,7 +31,7 @@ garbage collected, and where appropriate accept/return Go objects e.g. `time.Tim
 
 ## Instructions
 
-- Install SWIG (tested with versions 3.0.9, 4.0.0, 4.0.2)
+- Install SWIG (tested with versions 3.0.9, 4.0.0, 4.0.2, 4.1.1)
 - Install required runtime libraries
 - Run `git submodule update --init` to retrieve a copy of the Mosh repository
 - Build Mosh by following the instructions within the Mosh repository
