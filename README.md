@@ -23,22 +23,26 @@ The contents of the `internal` directory are the directly exposed C++ classes. T
 wrapped versions of those C++ classes that are better interoperable with idiomatic Go code (i.e. they are automatically
 garbage collected, and where appropriate accept/return Go objects e.g. `time.Time` and `time.Duration`).
 
-## Required Runtime Libraries
+## Required Build-Time Libraries
 
 - `ncurses`
-- `protobuf`
-- `abseil` (macOS)
+- `protobuf` & `abseil` (for protobuf versions sufficiently new that require it)
 - `crypto` (Linux)
+
+These build-time libraries are statically linked and are not required at runtime.
 
 ## Instructions
 
-- Install SWIG (tested with versions 3.0.9, 4.0.0, 4.0.2, 4.1.1)
-- Install required runtime libraries
+- Install SWIG
+- Install required build-time libraries
 - Run `git submodule update --init` to retrieve a copy of the Mosh repository
 - Build Mosh by following the instructions within the Mosh repository
 - Use go-mosh library and build downstream project normally with `go build`
 
-Build is confirmed functional on macOS (darwin) and Linux platforms when using Clang toolchain.
+Build is confirmed functional on the Linux platform when using Clang toolchain.
+
+The build is likely functional on macOS (darwin), but the build-time libraries remain dynamically linked (thus runtime)
+dependencies.
 
 Note: When using go-mosh as a Go module, follow these installation instructions within the instance of go-mosh loaded
 into the module managed $GOPATH.
