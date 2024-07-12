@@ -1,6 +1,6 @@
 /*
  * go-mosh: mosh SWIG wrapper for Golang
- * Copyright 2019-2023 Daniel Selifonov
+ * Copyright 2019-2024 Daniel Selifonov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,9 +46,10 @@
 
 // --------------------------------------------------------
 
-// un-ignore classes Terminal::{Complete, Display, Framebuffer}
+// un-ignore classes Terminal::{Complete, Display, DrawState, Framebuffer}
 %rename("%s") Complete;
 %rename("%s") Display;
+%rename("%s") DrawState;
 %rename("%s") Framebuffer;
 
 %rename (equals) Terminal::Complete::operator==;

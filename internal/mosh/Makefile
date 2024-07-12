@@ -1,4 +1,4 @@
-mosh.go:
+mosh.go: mosh.swigcxx
 	swig -go -cgo -c++ -intgosize 64 mosh.swigcxx
 
 mosh: mosh.go

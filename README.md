@@ -14,6 +14,7 @@ This SWIG specification wraps only a small subset of Mosh, specifically the foll
 - `Parser::UserByte`
 - `Terminal::Complete`
 - `Terminal::Display`
+- `Terminal::DrawState`
 - `Terminal::Framebuffer`
 
 These are essentially intended to make Mosh's speculative and predictive terminal emulation capabilities available as a
