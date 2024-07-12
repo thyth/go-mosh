@@ -1,6 +1,6 @@
 /*
  * go-mosh: mosh SWIG wrapper for Golang
- * Copyright 2019-2023 Daniel Selifonov
+ * Copyright 2019-2024 Daniel Selifonov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,8 +119,20 @@ func (emu *Complete) Compare(other *Complete) bool {
 	return cmp
 }
 
+type DrawState struct {
+	wrapped internals.DrawState
+}
+
+func (ds *DrawState) GetWidth() int {
+	return ds.wrapped.Get_width()
+}
+
+func (ds *DrawState) GetHeight() int {
+	return ds.wrapped.Get_height()
+}
+
 type Framebuffer struct {
-	Wrapped internals.Framebuffer
+	Wrapped internals.Framebuffer // note: needs to be exported since it is accessed from pkg/mosh/overlay
 }
 
 func MakeFramebuffer(width, height int) *Framebuffer {
@@ -144,6 +156,25 @@ func CopyFramebuffer(other *Framebuffer) *Framebuffer {
 		internals.DeleteFramebuffer(fb.Wrapped)
 	})
 	return fb
+}
+
+func (fb *Framebuffer) GetDrawState() *DrawState {
+	wrapped := fb.Wrapped.GetDs()
+	ds := &DrawState{
+		wrapped: wrapped,
+	}
+	runtime.SetFinalizer(ds, func(ds *DrawState) {
+		internals.DeleteDrawState(ds.wrapped)
+	})
+	return ds
+}
+
+func (fb *Framebuffer) GetWidth() int {
+	return fb.Wrapped.GetDs().Get_width() // skips wrapping the internal Terminal::DrawState in a new object
+}
+
+func (fb *Framebuffer) GetHeight() int {
+	return fb.Wrapped.GetDs().Get_height() // skips wrapping the internal Terminal::DrawState in a new object
 }
 
 // note: skipping reference assignment operator `Framebuffer &operator=( const Framebuffer &other );`
