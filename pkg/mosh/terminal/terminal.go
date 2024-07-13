@@ -159,13 +159,12 @@ func CopyFramebuffer(other *Framebuffer) *Framebuffer {
 }
 
 func (fb *Framebuffer) GetDrawState() *DrawState {
+	// lifetime of the DrawState should match that of the parent Framebuffer reference; library consumers should be
+	// careful not to hold onto these references longer than the corresponding Framebuffer
 	wrapped := fb.Wrapped.GetDs()
 	ds := &DrawState{
 		wrapped: wrapped,
 	}
-	runtime.SetFinalizer(ds, func(ds *DrawState) {
-		internals.DeleteDrawState(ds.wrapped)
-	})
 	return ds
 }
 
@@ -178,7 +177,6 @@ func (fb *Framebuffer) GetHeight() int {
 }
 
 // note: skipping reference assignment operator `Framebuffer &operator=( const Framebuffer &other );`
-// note: skipping access to DrawState field reference
 // note: skipping get_rows getter, since this is returning smart pointer types
 
 func (fb *Framebuffer) Scroll(n int) {
