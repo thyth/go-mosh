@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+set -o errexit
+
 # change into the mosh directory (relative to this script)
-pushd . || exit 1
-cd "$(dirname $0)/mosh" || exit 1
+pushd .
+cd "$(dirname "$0")/mosh"
 
 # build mosh
 ./autogen.sh
@@ -11,4 +13,4 @@ cd "$(dirname $0)/mosh" || exit 1
 # to statically link the mosh dependencies so that consumers of this go-mosh library do not need to deal with them.
 ./configure --enable-static-libraries
 make
-popd || exit 1
+popd
