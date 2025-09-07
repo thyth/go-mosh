@@ -1,6 +1,6 @@
 /*
  * go-mosh: mosh SWIG wrapper for Golang
- * Copyright 2019-2024 Daniel Selifonov
+ * Copyright 2019-2025 Daniel Selifonov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,10 +27,14 @@ import (
 	"time"
 )
 
+type MouseReportingMode int
+type MouseEncodingMode int
+
 type Complete struct {
 	wrapped internals.Complete
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func MakeComplete(width, height int) *Complete {
 	wrapped := internals.NewComplete(int64(width), int64(height))
 	emu := &Complete{
@@ -131,10 +135,27 @@ func (ds *DrawState) GetHeight() int {
 	return ds.wrapped.Get_height()
 }
 
+func (ds *DrawState) GetMouseReportingMode() MouseReportingMode {
+	return MouseReportingMode(ds.wrapped.GetMouse_reporting_mode())
+}
+
+func (ds *DrawState) SetMouseReportingMode(mode MouseReportingMode) {
+	ds.wrapped.SetMouse_reporting_mode(internals.TerminalDrawStateMouseReportingMode(mode))
+}
+
+func (ds *DrawState) GetMouseEncodingMode() MouseEncodingMode {
+	return MouseEncodingMode(ds.wrapped.GetMouse_encoding_mode())
+}
+
+func (ds *DrawState) SetMouseEncodingMode(mode MouseEncodingMode) {
+	ds.wrapped.SetMouse_encoding_mode(internals.TerminalDrawStateMouseEncodingMode(mode))
+}
+
 type Framebuffer struct {
 	Wrapped internals.Framebuffer // note: needs to be exported since it is accessed from pkg/mosh/overlay
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func MakeFramebuffer(width, height int) *Framebuffer {
 	wrapped := internals.NewFramebuffer(width, height)
 	fb := &Framebuffer{
@@ -146,6 +167,7 @@ func MakeFramebuffer(width, height int) *Framebuffer {
 	return fb
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func CopyFramebuffer(other *Framebuffer) *Framebuffer {
 	wrapped := internals.NewFramebuffer(other.Wrapped)
 	runtime.KeepAlive(other)
@@ -261,6 +283,7 @@ type Display struct {
 	wrapped internals.Display
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func MakeDisplay(useEnvironment bool) *Display {
 	wrapped := internals.NewDisplay(useEnvironment)
 	disp := &Display{
