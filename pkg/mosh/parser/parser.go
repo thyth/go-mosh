@@ -1,6 +1,6 @@
 /*
  * go-mosh: mosh SWIG wrapper for Golang
- * Copyright 2019-2023 Daniel Selifonov
+ * Copyright 2019-2025 Daniel Selifonov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,9 @@
 package parser
 
 import (
-	internals "gitlab.hive.thyth.com/chronostruct/go-mosh/internal/mosh"
 	"runtime"
+
+	internals "gitlab.hive.thyth.com/chronostruct/go-mosh/internal/mosh"
 )
 
 // Action covers all wrapper types for supported Parser::Action sub-classes
@@ -46,6 +47,7 @@ func (r *Resize) Ignore() bool {
 	return r.wrapped.Ignore()
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func MakeResize(width, height int64) *Resize {
 	wrapped := internals.NewResize(width, height)
 	r := &Resize{
@@ -73,6 +75,7 @@ func (ub *UserByte) Ignore() bool {
 	return ub.wrapped.Ignore()
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func MakeUserByte(b int) *UserByte {
 	wrapped := internals.NewUserByte(b)
 	ub := &UserByte{

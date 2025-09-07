@@ -1,6 +1,6 @@
 /*
  * go-mosh: mosh SWIG wrapper for Golang
- * Copyright 2019-2023 Daniel Selifonov
+ * Copyright 2019-2025 Daniel Selifonov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@ type PredictionEngine struct {
 	wrapped internals.PredictionEngine
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func MakePredictionEngine() *PredictionEngine {
 	wrapped := internals.NewPredictionEngine()
 	pe := &PredictionEngine{
