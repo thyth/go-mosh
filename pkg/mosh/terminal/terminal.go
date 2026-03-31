@@ -1,6 +1,6 @@
 /*
  * go-mosh: mosh SWIG wrapper for Golang
- * Copyright 2019-2025 Daniel Selifonov
+ * Copyright 2019-2026 Daniel Selifonov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -127,6 +127,31 @@ type DrawState struct {
 	wrapped internals.DrawState
 }
 
+func (ds *DrawState) GetNextPrintWillWrap() bool        { return ds.wrapped.GetNext_print_will_wrap() }
+func (ds *DrawState) SetNextPrintWillWrap(wrap bool)    { ds.wrapped.SetNext_print_will_wrap(wrap) }
+func (ds *DrawState) GetOriginMode() bool               { return ds.wrapped.GetOrigin_mode() }
+func (ds *DrawState) SetOriginMode(mode bool)           { ds.wrapped.SetOrigin_mode(mode) }
+func (ds *DrawState) GetAutoWrapMode() bool             { return ds.wrapped.GetAuto_wrap_mode() }
+func (ds *DrawState) SetAutoWrapMode(mode bool)         { ds.wrapped.SetAuto_wrap_mode(mode) }
+func (ds *DrawState) GetInsertMode() bool               { return ds.wrapped.GetInsert_mode() }
+func (ds *DrawState) SetInsertMode(mode bool)           { ds.wrapped.SetInsert_mode(mode) }
+func (ds *DrawState) GetCursorVisible() bool            { return ds.wrapped.GetCursor_visible() }
+func (ds *DrawState) SetCursorVisible(mode bool)        { ds.wrapped.SetCursor_visible(mode) }
+func (ds *DrawState) GetReverseVideo() bool             { return ds.wrapped.GetReverse_video() }
+func (ds *DrawState) SetReverseVideo(mode bool)         { ds.wrapped.SetReverse_video(mode) }
+func (ds *DrawState) GetBracketedPaste() bool           { return ds.wrapped.GetBracketed_paste() }
+func (ds *DrawState) SetBracketedPaste(mode bool)       { ds.wrapped.SetBracketed_paste(mode) }
+func (ds *DrawState) GetMouseFocusEvent() bool          { return ds.wrapped.GetMouse_focus_event() }
+func (ds *DrawState) SetMouseFocusEvent(mode bool)      { ds.wrapped.SetMouse_focus_event(mode) }
+func (ds *DrawState) GetMouseAlternateScroll() bool     { return ds.wrapped.GetMouse_alternate_scroll() }
+func (ds *DrawState) SetMouseAlternateScroll(mode bool) { ds.wrapped.SetMouse_alternate_scroll(mode) }
+func (ds *DrawState) GetApplicationModeCursorKeys() bool {
+	return ds.wrapped.GetApplication_mode_cursor_keys()
+}
+func (ds *DrawState) SetApplicationModeCursorKeys(mode bool) {
+	ds.wrapped.SetApplication_mode_cursor_keys(mode)
+}
+
 func (ds *DrawState) GetWidth() int {
 	return ds.wrapped.Get_width()
 }
@@ -149,6 +174,33 @@ func (ds *DrawState) GetMouseEncodingMode() MouseEncodingMode {
 
 func (ds *DrawState) SetMouseEncodingMode(mode MouseEncodingMode) {
 	ds.wrapped.SetMouse_encoding_mode(internals.TerminalDrawStateMouseEncodingMode(mode))
+}
+
+// NonDisplayAffectingFields extracts state fields that do not affect display, but can still be important for behavior
+// equality between different DrawState instances.
+func (ds *DrawState) NonDisplayAffectingFields() map[string]bool {
+	return map[string]bool{
+		"npww": ds.GetNextPrintWillWrap(),
+		"om":   ds.GetOriginMode(),
+		"awm":  ds.GetAutoWrapMode(),
+		"im":   ds.GetInsertMode(),
+	}
+}
+
+// UpdateNonDisplayAffectingFields updates state fields that do not affect display from the supplied settings map.
+func (ds *DrawState) UpdateNonDisplayAffectingFields(settings map[string]bool) {
+	if npww, exists := settings["npww"]; exists {
+		ds.SetNextPrintWillWrap(npww)
+	}
+	if om, exists := settings["om"]; exists {
+		ds.SetOriginMode(om)
+	}
+	if awm, exists := settings["awm"]; exists {
+		ds.SetAutoWrapMode(awm)
+	}
+	if im, exists := settings["im"]; exists {
+		ds.SetInsertMode(im)
+	}
 }
 
 type Framebuffer struct {
