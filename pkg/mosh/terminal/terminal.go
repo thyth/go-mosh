@@ -123,6 +123,30 @@ func (emu *Complete) Compare(other *Complete) bool {
 	return cmp
 }
 
+type Cell struct {
+	wrapped internals.Cell
+}
+
+func (c *Cell) DebugContents() string          { return c.wrapped.Debug_contents() }
+func (c *Cell) Empty() bool                    { return c.wrapped.Empty() }
+func (c *Cell) Full() bool                     { return c.wrapped.Full() }
+func (c *Cell) Clear()                         { c.wrapped.Clear() }
+func (c *Cell) IsBlank() bool                  { return c.wrapped.Is_blank() }
+func (c *Cell) ContentsMatch(other *Cell) bool { return c.wrapped.Contents_match(other.wrapped) }
+func (c *Cell) Compare(other *Cell) bool       { return c.wrapped.Compare(other.wrapped) }
+func (c *Cell) PrintGrapheme() string {
+	output := ""
+	c.wrapped.Print_grapheme(&output)
+	return output
+}
+func (c *Cell) GetWide() bool      { return c.wrapped.Get_wide() }
+func (c *Cell) SetWide(wide bool)  { c.wrapped.Set_wide(wide) }
+func (c *Cell) GetWidth() uint     { return c.wrapped.Get_width() }
+func (c *Cell) GetFallback() bool  { return c.wrapped.Get_fallback() }
+func (c *Cell) SetFallback(f bool) { c.wrapped.Set_fallback(f) }
+func (c *Cell) GetWrap() bool      { return c.wrapped.Get_wrap() }
+func (c *Cell) SetWrap(wrap bool)  { c.wrapped.Set_wrap(wrap) }
+
 type DrawState struct {
 	wrapped internals.DrawState
 }
@@ -203,6 +227,13 @@ func (ds *DrawState) UpdateNonDisplayAffectingFields(settings map[string]bool) {
 	}
 }
 
+type Row struct {
+	wrapped internals.Row
+}
+
+func (r *Row) GetWrap() bool     { return r.wrapped.Get_wrap() }
+func (r *Row) SetWrap(wrap bool) { r.wrapped.Set_wrap(wrap) }
+
 type Framebuffer struct {
 	Wrapped internals.Framebuffer // note: needs to be exported since it is accessed from pkg/mosh/overlay
 }
@@ -261,10 +292,30 @@ func (fb *Framebuffer) MoveRowsAutoscroll(rows int) {
 	fb.Wrapped.Move_rows_autoscroll(rows)
 }
 
-// note: skipping `Row *get_row( int row )`
-// note: skipping `Cell *get_cell( int row = -1, int col = -1 )`
-// note: skipping `Row *get_mutable_row( int row )`
-// note: skipping `Cell *get_mutable_cell( int row = -1, int col = -1 )`
+func (fb *Framebuffer) GetRow(row int) *Row {
+	// lifetime of the Row should match that of the parent Framebuffer reference; library consumers should be careful
+	// not to hold onto these references longer than the corresponding Framebuffer
+	return &Row{wrapped: fb.Wrapped.Get_row(row)}
+}
+
+func (fb *Framebuffer) GetCell(row, col int) *Cell {
+	// lifetime of the Cell should match that of the parent Framebuffer reference; library consumers should be careful
+	// not to hold onto these references longer than the corresponding Framebuffer
+	return &Cell{wrapped: fb.Wrapped.Get_cell(row, col)}
+}
+
+func (fb *Framebuffer) GetMutableRow(row int) *Row {
+	// lifetime of the Row should match that of the parent Framebuffer reference; library consumers should be careful
+	// not to hold onto these references longer than the corresponding Framebuffer
+	return &Row{wrapped: fb.Wrapped.Get_mutable_row(row)}
+}
+
+func (fb *Framebuffer) GetMutableCell(row, col int) *Cell {
+	// lifetime of the Cell should match that of the parent Framebuffer reference; library consumers should be careful
+	// not to hold onto these references longer than the corresponding Framebuffer
+	return &Cell{wrapped: fb.Wrapped.Get_mutable_cell(row, col)}
+}
+
 // note: skipping `Cell *get_combining_cell( void )`
 // note: skipping `void apply_renditions_to_cell( Cell *cell )`
 
