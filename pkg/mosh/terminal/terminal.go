@@ -200,33 +200,6 @@ func (ds *DrawState) SetMouseEncodingMode(mode MouseEncodingMode) {
 	ds.wrapped.SetMouse_encoding_mode(internals.TerminalDrawStateMouseEncodingMode(mode))
 }
 
-// NonDisplayAffectingFields extracts state fields that do not affect display, but can still be important for behavior
-// equality between different DrawState instances.
-func (ds *DrawState) NonDisplayAffectingFields() map[string]bool {
-	return map[string]bool{
-		"npww": ds.GetNextPrintWillWrap(),
-		"om":   ds.GetOriginMode(),
-		"awm":  ds.GetAutoWrapMode(),
-		"im":   ds.GetInsertMode(),
-	}
-}
-
-// UpdateNonDisplayAffectingFields updates state fields that do not affect display from the supplied settings map.
-func (ds *DrawState) UpdateNonDisplayAffectingFields(settings map[string]bool) {
-	if npww, exists := settings["npww"]; exists {
-		ds.SetNextPrintWillWrap(npww)
-	}
-	if om, exists := settings["om"]; exists {
-		ds.SetOriginMode(om)
-	}
-	if awm, exists := settings["awm"]; exists {
-		ds.SetAutoWrapMode(awm)
-	}
-	if im, exists := settings["im"]; exists {
-		ds.SetInsertMode(im)
-	}
-}
-
 type Row struct {
 	wrapped internals.Row
 }
