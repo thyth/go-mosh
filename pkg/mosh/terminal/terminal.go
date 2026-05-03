@@ -1,6 +1,6 @@
 /*
  * go-mosh: mosh SWIG wrapper for Golang
- * Copyright 2019-2025 Daniel Selifonov
+ * Copyright 2019-2026 Daniel Selifonov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,8 +123,57 @@ func (emu *Complete) Compare(other *Complete) bool {
 	return cmp
 }
 
+type Cell struct {
+	wrapped internals.Cell
+}
+
+func (c *Cell) DebugContents() string          { return c.wrapped.Debug_contents() }
+func (c *Cell) Empty() bool                    { return c.wrapped.Empty() }
+func (c *Cell) Full() bool                     { return c.wrapped.Full() }
+func (c *Cell) Clear()                         { c.wrapped.Clear() }
+func (c *Cell) IsBlank() bool                  { return c.wrapped.Is_blank() }
+func (c *Cell) ContentsMatch(other *Cell) bool { return c.wrapped.Contents_match(other.wrapped) }
+func (c *Cell) Compare(other *Cell) bool       { return c.wrapped.Compare(other.wrapped) }
+func (c *Cell) PrintGrapheme() string {
+	output := ""
+	c.wrapped.Print_grapheme(&output)
+	return output
+}
+func (c *Cell) GetWide() bool      { return c.wrapped.Get_wide() }
+func (c *Cell) SetWide(wide bool)  { c.wrapped.Set_wide(wide) }
+func (c *Cell) GetWidth() uint     { return c.wrapped.Get_width() }
+func (c *Cell) GetFallback() bool  { return c.wrapped.Get_fallback() }
+func (c *Cell) SetFallback(f bool) { c.wrapped.Set_fallback(f) }
+func (c *Cell) GetWrap() bool      { return c.wrapped.Get_wrap() }
+func (c *Cell) SetWrap(wrap bool)  { c.wrapped.Set_wrap(wrap) }
+
 type DrawState struct {
 	wrapped internals.DrawState
+}
+
+func (ds *DrawState) GetNextPrintWillWrap() bool        { return ds.wrapped.GetNext_print_will_wrap() }
+func (ds *DrawState) SetNextPrintWillWrap(wrap bool)    { ds.wrapped.SetNext_print_will_wrap(wrap) }
+func (ds *DrawState) GetOriginMode() bool               { return ds.wrapped.GetOrigin_mode() }
+func (ds *DrawState) SetOriginMode(mode bool)           { ds.wrapped.SetOrigin_mode(mode) }
+func (ds *DrawState) GetAutoWrapMode() bool             { return ds.wrapped.GetAuto_wrap_mode() }
+func (ds *DrawState) SetAutoWrapMode(mode bool)         { ds.wrapped.SetAuto_wrap_mode(mode) }
+func (ds *DrawState) GetInsertMode() bool               { return ds.wrapped.GetInsert_mode() }
+func (ds *DrawState) SetInsertMode(mode bool)           { ds.wrapped.SetInsert_mode(mode) }
+func (ds *DrawState) GetCursorVisible() bool            { return ds.wrapped.GetCursor_visible() }
+func (ds *DrawState) SetCursorVisible(mode bool)        { ds.wrapped.SetCursor_visible(mode) }
+func (ds *DrawState) GetReverseVideo() bool             { return ds.wrapped.GetReverse_video() }
+func (ds *DrawState) SetReverseVideo(mode bool)         { ds.wrapped.SetReverse_video(mode) }
+func (ds *DrawState) GetBracketedPaste() bool           { return ds.wrapped.GetBracketed_paste() }
+func (ds *DrawState) SetBracketedPaste(mode bool)       { ds.wrapped.SetBracketed_paste(mode) }
+func (ds *DrawState) GetMouseFocusEvent() bool          { return ds.wrapped.GetMouse_focus_event() }
+func (ds *DrawState) SetMouseFocusEvent(mode bool)      { ds.wrapped.SetMouse_focus_event(mode) }
+func (ds *DrawState) GetMouseAlternateScroll() bool     { return ds.wrapped.GetMouse_alternate_scroll() }
+func (ds *DrawState) SetMouseAlternateScroll(mode bool) { ds.wrapped.SetMouse_alternate_scroll(mode) }
+func (ds *DrawState) GetApplicationModeCursorKeys() bool {
+	return ds.wrapped.GetApplication_mode_cursor_keys()
+}
+func (ds *DrawState) SetApplicationModeCursorKeys(mode bool) {
+	ds.wrapped.SetApplication_mode_cursor_keys(mode)
 }
 
 func (ds *DrawState) GetWidth() int {
@@ -150,6 +199,13 @@ func (ds *DrawState) GetMouseEncodingMode() MouseEncodingMode {
 func (ds *DrawState) SetMouseEncodingMode(mode MouseEncodingMode) {
 	ds.wrapped.SetMouse_encoding_mode(internals.TerminalDrawStateMouseEncodingMode(mode))
 }
+
+type Row struct {
+	wrapped internals.Row
+}
+
+func (r *Row) GetWrap() bool     { return r.wrapped.Get_wrap() }
+func (r *Row) SetWrap(wrap bool) { r.wrapped.Set_wrap(wrap) }
 
 type Framebuffer struct {
 	Wrapped internals.Framebuffer // note: needs to be exported since it is accessed from pkg/mosh/overlay
@@ -209,10 +265,30 @@ func (fb *Framebuffer) MoveRowsAutoscroll(rows int) {
 	fb.Wrapped.Move_rows_autoscroll(rows)
 }
 
-// note: skipping `Row *get_row( int row )`
-// note: skipping `Cell *get_cell( int row = -1, int col = -1 )`
-// note: skipping `Row *get_mutable_row( int row )`
-// note: skipping `Cell *get_mutable_cell( int row = -1, int col = -1 )`
+func (fb *Framebuffer) GetRow(row int) *Row {
+	// lifetime of the Row should match that of the parent Framebuffer reference; library consumers should be careful
+	// not to hold onto these references longer than the corresponding Framebuffer
+	return &Row{wrapped: fb.Wrapped.Get_row(row)}
+}
+
+func (fb *Framebuffer) GetCell(row, col int) *Cell {
+	// lifetime of the Cell should match that of the parent Framebuffer reference; library consumers should be careful
+	// not to hold onto these references longer than the corresponding Framebuffer
+	return &Cell{wrapped: fb.Wrapped.Get_cell(row, col)}
+}
+
+func (fb *Framebuffer) GetMutableRow(row int) *Row {
+	// lifetime of the Row should match that of the parent Framebuffer reference; library consumers should be careful
+	// not to hold onto these references longer than the corresponding Framebuffer
+	return &Row{wrapped: fb.Wrapped.Get_mutable_row(row)}
+}
+
+func (fb *Framebuffer) GetMutableCell(row, col int) *Cell {
+	// lifetime of the Cell should match that of the parent Framebuffer reference; library consumers should be careful
+	// not to hold onto these references longer than the corresponding Framebuffer
+	return &Cell{wrapped: fb.Wrapped.Get_mutable_cell(row, col)}
+}
+
 // note: skipping `Cell *get_combining_cell( void )`
 // note: skipping `void apply_renditions_to_cell( Cell *cell )`
 
