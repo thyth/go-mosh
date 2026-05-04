@@ -1,6 +1,6 @@
 /*
  * go-mosh: mosh SWIG wrapper for Golang
- * Copyright 2025 Daniel Selifonov
+ * Copyright 2025-2026 Daniel Selifonov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,30 @@ package mosh
 
 /*
 #include <locale.h>
-static void init_utf8_locale(void) {
-	setlocale(LC_ALL, "en_US.UTF-8");
+#include <langinfo.h>
+#include <strings.h>
+
+static int codeset_is_utf8(void) {
+    const char *cs = nl_langinfo(CODESET);
+    return cs != 0 &&
+        (strcasecmp(cs, "UTF-8") == 0 ||
+         strcasecmp(cs, "UTF8") == 0);
+}
+
+static const char* init_utf8_locale(void) {
+    const char *r;
+    r = setlocale(LC_CTYPE, "");
+    if (r != 0 && codeset_is_utf8()) return r;
+    r = setlocale(LC_CTYPE, "C.UTF-8");
+    if (r != 0 && codeset_is_utf8()) return r;
+    r = setlocale(LC_CTYPE, "C.utf8");
+    if (r != 0 && codeset_is_utf8()) return r;
+    r = setlocale(LC_CTYPE, "en_US.UTF-8");
+    if (r != 0 && codeset_is_utf8()) return r;
+    r = setlocale(LC_CTYPE, "UTF-8");
+    if (r != 0 && codeset_is_utf8()) return r;
+
+    return NULL;
 }
 */
 import "C"
@@ -34,5 +56,10 @@ func init() {
 	// See: https://github.com/mobile-shell/mosh/blob/1105d481bb9143dad43adf768f58da7b029fd39c/src/frontend/mosh-client.cc#L193
 	//
 	// We need to do the same since "C" locale results in the conversion loss of non-ASCII UTF-8 glyphs.
-	C.init_utf8_locale()
+	//
+	// We try a few different ways to discover a UTF-8 capable locale, in case "" itself fails to produce a UTF-8
+	// enabled locale. We explicitly panic on initialization instead of proceeding with silent UTF-8 glyph drops.
+	if locale := C.init_utf8_locale(); locale == nil {
+		panic("failed to initialize a UTF-8 LC_CTYPE for embedded mosh")
+	}
 }
