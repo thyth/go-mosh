@@ -32,6 +32,10 @@ garbage collected, and where appropriate accept/return Go objects e.g. `time.Tim
 
 These build-time libraries are statically linked and are not required at runtime.
 
+## Required Run-Time Dependencies
+
+- The running system requires a UTF-8 equipped locale, and a Terminfo database entry for `xterm-256color`.
+
 ## Instructions
 
 - Install SWIG
@@ -45,5 +49,5 @@ Build is confirmed functional on the Linux platform when using Clang toolchain.
 The build is likely functional on macOS (darwin), but the build-time libraries remain dynamically linked (thus runtime)
 dependencies.
 
-Note: When using go-mosh as a Go module, follow these installation instructions within the instance of go-mosh loaded
-into the module managed $GOPATH.
+Note: When using `go-mosh` as a Go module, follow these installation instructions within the instance of `go-mosh`
+loaded into the module managed `$GOPATH`.
