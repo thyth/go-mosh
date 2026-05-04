@@ -1,7 +1,7 @@
 # Build Sanity/Smoke Test for go-mosh
 #
-# Note: This just verifies that mosh can be compiled, that `go build` works, and that the mosh version can be read at
-# runtime via a trivial unit test.
+# Note: This verifies that mosh can be compiled, that `go build` works, that the mosh version can be read at runtime via
+# a trivial unit test, and that UTF-8 glyphs successfully round-trip through the mosh terminal emulator.
 
 image: "ubuntu:jammy"
 
@@ -12,6 +12,8 @@ before_script:
   - apt-get update -qq
   # certs and git to pull the mosh submodule; swig and golang to build go-mosh
   - apt-get install -y -qq ca-certificates git swig golang-1.18
+  # adjust the path to include the go binaries for the explicitly installed version
+  - export PATH=/usr/lib/go-1.18/bin/:$PATH
   # packages required to build mosh
   - apt-get install -y -qq autoconf make pkg-config libncurses-dev protobuf-compiler libprotobuf-dev zlib1g-dev libssl-dev
   # use clang instead of g++/gcc to build mosh and the cgo dependency in go-mosh
@@ -20,8 +22,12 @@ before_script:
 sanity_check:
   stage: build
   script:
-    - git submodule update --init
     # note: using explicit CC/CXX settings to clang as setting the system compiler was not sufficient for invoking go
-    - CC="clang" CXX="clang++" ./build-mosh.sh
-    - CC="clang" CXX="clang++" /usr/lib/go-1.18/bin/go build ./...
-    - CC="clang" CXX="clang++" /usr/lib/go-1.18/bin/go test ./test/mosh
+    - export CC=clang
+    - export CXX=clang++
+    - git submodule update --init
+    - ./build-mosh.sh
+    - go build ./...
+    # Set a reasonable TERM value in case any test initializes enough of mosh to where it tries to read the Terminfo
+    # database at runtime.
+    - TERM=xterm-256color go test ./test/mosh
